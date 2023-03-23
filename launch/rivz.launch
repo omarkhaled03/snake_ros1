@@ -1,0 +1,26 @@
+<launch>
+  <!-- Load xacro model -->
+  <arg name="model" default="$(find snake)/xacro/snake.robot.urdf.xacro" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+
+
+    <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui">
+        <param name="use_gui" value="True"/>
+    </node>
+    
+    <rosparam file="$(find snake)/config/controller.yaml" command="load"/>
+
+   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/snake" args="joint1_position_controller joint2_position_controller joint_state_controller
+    joint3_position_controller joint4_position_controller
+    joint5_position_controller joint6_position_controller
+    joint7_position_controller joint8_position_controller
+    joint9_position_controller"/>
+
+
+  <node name="rviz" pkg="rviz" type="rviz" >
+  </node>
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" respawn="false" output="screen">
+  </node>
+</launch>
+

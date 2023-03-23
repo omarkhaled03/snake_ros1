@@ -1,0 +1,44 @@
+<launch>
+  <arg name="robot_name" default="snake_ros1"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+    <arg name="verbose" value="false"/>
+    <arg name="debug" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="headless" value="false"/>
+
+  </include>
+    
+
+  <!-- Spawn MAV -->
+  <include file="$(find snake_ros1)/launch/spawn_mav.launch">
+    <arg name="robot_name" value="$(arg robot_name)" />
+    <arg name="model" value="$(find snake_ros1)/xacro/snake.robot.urdf.xacro" />
+    
+  </include>
+
+    <arg name="model" value="$(find snake_ros1)/xacro/snake.robot.urdf.xacro" />
+
+  <rosparam file="$(find snake_ros1)/config/controller.yaml" command="load"/>
+
+   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/snake" args="joint1_position_controller joint2_position_controller joint_state_controller
+    joint3_position_controller joint4_position_controller
+    joint5_position_controller joint6_position_controller
+    joint7_position_controller joint8_position_controller
+    joint9_position_controller"/>
+      
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" respawn="false" output="screen">
+    <remap from= "/joint_states" to="/snake/joint_states"/>
+  </node>
+  <node name="rviz" pkg="rviz" type="rviz" >
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+
+  </node>
+
+      <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+    </node>
+</launch>
+
